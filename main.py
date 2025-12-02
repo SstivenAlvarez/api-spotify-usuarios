@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from database import (
-    get_all_users, get_user_by_id, create_user, 
-    update_user, delete_user
+    tod_user, todos_users_id, crear_usuario, 
+    actua_user, eliminar_user
 )
 from spotify_service import search_song, search_artist
 
@@ -35,39 +35,40 @@ class UserUpdate(BaseModel):
 
 
 @app.get("/")
-def read_root():
+def Bienvenia_Al_root():
     """INICIO"""
     return {
         "message": "¡Bienvenido a Music API POR STIVEN ALVAREZ!",
+        "TAREA 1": "API REST",
         "version": "1.0.0",
         "endpoints": {
             "usuarios": "/users",
-            "spotify_canciones": "/spotify/search/song",
-            "spotify_artistas": "/spotify/search/artist"
+            "Spotify_canciones": "/spotify/search/song",
+            "Spotify_artistas": "/spotify/search/artist"
         }
     }
 
 # Ver usuario con filtro por ID
 
 @app.get("/users")
-def list_users():
+def LISTA_DE_USUARIOS():
     """VER TODOS LOS USUARIOS"""
-    users = get_all_users()
+    users = tod_user()
     return {"total": len(users), "users": users}
 
 @app.get("/users/{user_id}")
-def get_user(user_id: int):
+def BUSCAR_USUARIO_POR_ID(user_id: int):
     """VER USUARIO POR ID"""
-    user = get_user_by_id(user_id)
+    user = todos_users_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return user
 
 # Crear usuario
 @app.post("/users")
-def create_new_user(user: User):
+def AGREGAR_USUARIO(user: User):
     """CCREAR USUARIO"""
-    result = create_user(
+    result = crear_usuario(
         username=user.username,
         email=user.email,
         age=user.age,
@@ -80,13 +81,13 @@ def create_new_user(user: User):
 
 # Actulizar Usuario
 @app.put("/users/{user_id}")
-def update_existing_user(user_id: int, user: UserUpdate):
+def ACTUALIZAR_USUARIO(user_id: int, user: UserUpdate):
     """Actualiza un usuario existente"""
-    existing_user = get_user_by_id(user_id)
+    existing_user = todos_users_id(user_id)
     if not existing_user:
         raise HTTPException(status_code=404, detail="Usuario no se encontro")
     
-    result = update_user(
+    result = actua_user(
         user_id=user_id,
         username=user.username,
         email=user.email,
@@ -100,36 +101,36 @@ def update_existing_user(user_id: int, user: UserUpdate):
 
 #Delete user
 @app.delete("/users/{user_id}")
-def delete_existing_user(user_id: int):
+def ELIMINAR_USUARIO(user_id: int):
     """Eliminar un usuario"""
-    existing_user = get_user_by_id(user_id)
+    existing_user = todos_users_id(user_id)
     if not existing_user:
         raise HTTPException(status_code=404, detail="Usuario no se encontro")
     
-    result = delete_user(user_id)
+    result = eliminar_user(user_id)
     return result
 
 # Parte de Spotify
 ### BUSCAR CANCION
 @app.get("/spotify/search/song")
-def search_spotify_song(q: str):
+def BUSCAR_CANCION_DE_SPOTIFY(uem: str):
     """Busca una canción en Spotify"""
-    if not q:
-        raise HTTPException(status_code=400, detail="Parámetro 'q' es requerido")
+    if not uem:
+        raise HTTPException(status_code=400, detail="Parámetro 'uem' es requerido")
     
-    result = search_song(q)
+    result = search_song(uem)
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
 
 ## BUSCAR ARTISTA
 @app.get("/spotify/search/artist")
-def search_spotify_artist(q: str):
+def BUSCAR_ARTISTA_DE_SPOTIFY(uem: str):
     """Busca un artista en Spotify"""
-    if not q:
-        raise HTTPException(status_code=400, detail="Parámetro 'q' es requerido")
+    if not uem:
+        raise HTTPException(status_code=400, detail="Parámetro 'uem' es requerido")
     
-    result = search_artist(q)
+    result = search_artist(uem)
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result

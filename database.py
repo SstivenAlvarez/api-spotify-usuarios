@@ -2,16 +2,16 @@ import mysql.connector
 from config import DB_CONFIG
 from typing import List, Dict, Optional
 
-def get_connection():
+def conexion():
     """Obtiene una conexión a la base de datos"""
     return mysql.connector.connect(**DB_CONFIG)
 
 # USUARIOS
 ## todos los usuarios
-def get_all_users() -> List[Dict]:
+def tod_user() -> List[Dict]:
     """Obtiene todos los usuarios"""
     try:
-        conn = get_connection()
+        conn = conexion()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users")
         users = cursor.fetchall()
@@ -23,10 +23,10 @@ def get_all_users() -> List[Dict]:
         return []
     
 ## usuario por id
-def get_user_by_id(user_id: int) -> Optional[Dict]:
+def todos_users_id(user_id: int) -> Optional[Dict]:
     """Obtiene un usuario por ID"""
     try:
-        conn = get_connection()
+        conn = conexion()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
@@ -38,10 +38,10 @@ def get_user_by_id(user_id: int) -> Optional[Dict]:
         return None
     
 ## crear usuario
-def create_user(username: str, email: str, age: int, favorite_genre: str, favorite_artist: str) -> Dict:
+def crear_usuario(username: str, email: str, age: int, favorite_genre: str, favorite_artist: str) -> Dict:
     """Crea un nuevo usuario"""
     try:
-        conn = get_connection()
+        conn = conexion()
         cursor = conn.cursor()
         query = """
             INSERT INTO users (username, email, age, favorite_genre, favorite_artist)
@@ -52,17 +52,17 @@ def create_user(username: str, email: str, age: int, favorite_genre: str, favori
         user_id = cursor.lastrowid
         cursor.close()
         conn.close()
-        return {"id": user_id, "message": "Usuario creado exitosamente"}
+        return {"id": user_id, "Mensaje": "Usuario creado exitosamente"}
     except Exception as e:
         print(f"Error al crear este usuario: {e}")
         return {"error": str(e)}
     
 #actualizar
-def update_user(user_id: int, username: str = None, email: str = None, age: int = None, 
+def actua_user(user_id: int, username: str = None, email: str = None, age: int = None, 
                 favorite_genre: str = None, favorite_artist: str = None) -> Dict:
     """Actualizar un usuario"""
     try:
-        conn = get_connection()
+        conn = conexion()
         cursor = conn.cursor()
         
         updates = []
@@ -99,10 +99,10 @@ def update_user(user_id: int, username: str = None, email: str = None, age: int 
         return {"error": str(e)}
 
 ## Eliminar
-def delete_user(user_id: int) -> Dict:
+def eliminar_user(user_id: int) -> Dict:
     """Elimina un usuario"""
     try:
-        conn = get_connection()
+        conn = conexion()
         cursor = conn.cursor()
         cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         conn.commit()
